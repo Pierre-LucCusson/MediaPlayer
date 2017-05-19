@@ -1,6 +1,7 @@
 package ets.mediaplayer;
 
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,25 +13,56 @@ import android.view.MenuItem;
 
 public class MediaPlayerActivity extends AppCompatActivity {
 
+    enum STATE {
+        Play,
+        Pause
+    }
+
+    STATE state;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media_player);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-       FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        state = STATE.Play;
+    }
 
-    // Example of a call to a native method
-    TextView tv = (TextView) findViewById(R.id.sample_text);
-    tv.setText(stringFromJNI());
+    public void play(View view)
+    {
+        Button button = (Button) view;
+
+        switch (state)
+        {
+            case Play:
+                button.setText("Pause");
+                state = STATE.Pause;
+                break;
+            case Pause:
+                button.setText("Play");
+                state = STATE.Play;
+                break;
+        }
+
+    }
+
+    public void next(View view)
+    {
+
+    }
+
+    public void back(View view)
+    {
+
+    }
+
+    public void shuffle(View view)
+    {
+
+    }
+
+    public void repeat(View view)
+    {
+
     }
 
     @Override
