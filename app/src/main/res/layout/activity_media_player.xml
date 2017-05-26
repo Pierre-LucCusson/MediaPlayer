@@ -14,6 +14,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout
+        android:background="@color/background"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -29,16 +30,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="back"
-                android:text="Back" />
+                android:text="@string/back" />
 
             <Button
                 android:id="@+id/playButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="play"
-                android:text="Play"
+                android:text="@string/play"
                 android:visibility="visible" />
 
             <Button
@@ -46,8 +45,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="next"
-                android:text="Next" />
+                android:text="@string/next" />
         </LinearLayout>
 
         <LinearLayout
@@ -58,22 +56,20 @@
             android:layout_above="@+id/buttonLayout">
 
             <TextView
-                android:id="@+id/editText5"
+                android:id="@+id/currentTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:inputType="time"
                 android:text="00:00" />
 
             <SeekBar
-                android:id="@+id/seekBar3"
+                android:id="@+id/timeSeekBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="10"
-                android:layout_toStartOf="@id/editText4"
-                android:layout_toEndOf="@id/editText5"/>
+                android:layout_weight="10" />
 
             <TextView
-                android:id="@+id/editText4"
+                android:id="@+id/totalTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:inputType="time"
@@ -92,23 +88,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Shuffle"
-                android:onClick="shuffle"/>
+                android:text="@string/shuffle" />
 
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:layout_weight="1"
-                android:layout_toStartOf="@id/button10"
-                android:layout_toEndOf="@id/button11">
+                android:layout_weight="1">
 
                 <TextView
                     android:id="@+id/songText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentCenter = "true"
                     android:inputType="text"
                     android:text="My heart will go on"
                     android:textAlignment="center"/>
@@ -116,7 +108,6 @@
                     android:id="@+id/artistText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentCenter = "true"
                     android:inputType="text"
                     android:text="Céline Dion"
                     android:textAlignment="center" />
@@ -125,19 +116,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_alignParentCenter = "true"
                     android:inputType="text"
                     android:text="Titanic"
                     android:textAlignment="center"/>
             </LinearLayout>
 
-            <Button
-                android:id="@+id/button10"
+            <ToggleButton
+                android:id="@+id/repeatButton"
                 android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Repeat"
-                android:onClick="repeat"/>
+                android:text="@string/loop"
+                android:textOn="@string/loop"
+                android:textOff="@string/loop"/>
         </LinearLayout>
 
         <LinearLayout
@@ -148,7 +139,7 @@
             android:layout_above="@+id/infoLayout">
 
             <SeekBar
-                android:id="@+id/seekBar5"
+                android:id="@+id/volumeSeekBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
