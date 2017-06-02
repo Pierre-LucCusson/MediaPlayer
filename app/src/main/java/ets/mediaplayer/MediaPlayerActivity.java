@@ -23,8 +23,55 @@ import java.util.concurrent.TimeUnit;
 public class MediaPlayerActivity extends AppCompatActivity {
 
     MediaPlayer player;
+    Boolean shuffling = false;
 
     private Handler seekBarHandler = new Handler();
+
+    public void play(View view) {
+        Button button = (Button) view;
+        if (player.isPlaying()){
+            button.setText(R.string.play);
+            player.pause();
+        }else{
+            button.setText(R.string.pause);
+            player.start();
+        }
+        Log.d("Test", String.format("Play: %b",player.isPlaying() ));
+    }
+
+    public void next(View view) {
+//        player.getCurrentPosition();
+//                player.getSelectedTrack();
+//        player.getTrackInfo();
+//        player.selectTrack(2);
+        Log.d("Test", "Next was clicked");
+    }
+
+    public void back(View view) {
+        player.seekTo(0);
+
+        Log.d("Test", "Back was clicked");
+    }
+
+    public void loop(View view) {
+        if (player.isLooping()) {
+            player.setLooping(false);
+        }
+        else {
+            player.setLooping(true);
+        }
+        Log.d("Test", String.format("Loop: %b",player.isLooping() ));
+    }
+
+    public void shuffle(View view) {
+        if (shuffling) {
+            shuffling = false;
+        }
+        else {
+            shuffling = true;
+        }
+        Log.d("Test", String.format("Shuffling: %b",shuffling ));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,15 +99,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
         {
             @Override
             public void onClick(View view) {
-                Button button = (Button) view;
-                Log.d("Test", String.format("%b",player.isPlaying() ));
-                if (player.isPlaying()){
-                    button.setText(R.string.play);
-                    player.pause();
-                }else{
-                    button.setText(R.string.pause);
-                    player.start();
-                }
+                play(view);
             }
         } );
 
@@ -70,7 +109,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
         {
             @Override
             public void onClick(View view) {
-                //TODO: Next
+                next(view);
             }
         } );
 
@@ -80,10 +119,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
         {
             @Override
             public void onClick(View view) {
-
-                player.seekTo(0);
-                //TODO: if player.position = 0 => back
-
+                back(view);
             }
         } );
 
@@ -98,7 +134,6 @@ public class MediaPlayerActivity extends AppCompatActivity {
         });
 
         //Seek bar
-
         ((SeekBar) findViewById(R.id.timeSeekBar)).setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {

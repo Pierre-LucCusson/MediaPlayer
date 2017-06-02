@@ -38,14 +38,16 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/play"
-                android:visibility="visible" />
+                android:visibility="visible"
+                android:onClick="play" />
 
             <Button
                 android:id="@+id/nextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/next" />
+                android:text="@string/next"
+                android:onClick="next" />
         </LinearLayout>
 
         <LinearLayout
@@ -88,7 +90,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/shuffle" />
+                android:text="@string/shuffle"
+                android:onClick="shuffle" />
 
 
             <LinearLayout
@@ -128,7 +131,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/loop"
                 android:textOn="@string/loop"
-                android:textOff="@string/loop"/>
+                android:textOff="@string/loop"
+                android:onClick="loop" />
         </LinearLayout>
 
         <LinearLayout
