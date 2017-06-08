@@ -20,14 +20,15 @@ import android.widget.ToggleButton;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 public class MediaPlayerActivity extends AppCompatActivity {
 
     MediaPlayer player;
-    ArrayList<Integer> playlist;
-    int songPlaying = 0;
-    Boolean shuffling = false;
+    Playlist playlist;
+    Timer timer;
 
     private Handler seekBarHandler = new Handler();
 
@@ -40,7 +41,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
             button.setText(R.string.pause);
             player.start();
         }
-        Log.d("Test", String.format("Play: %b",player.isPlaying() ));
+        Log.d("Test", String.format("Play: %b", player.isPlaying() ));
     }
 
     public void next(View view) {
@@ -50,7 +51,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
 //        player.selectTrack(2);
 
         player.reset();
-        player = MediaPlayer.create(this, getNextSong());
+        player = MediaPlayer.create(this, playlist.getNextSong());
         player.start();
 
         Log.d("Test", "Next was clicked");
@@ -62,7 +63,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
         }
         else {
             player.reset();
-            player = MediaPlayer.create(this, getPreviousSong());
+            player = MediaPlayer.create(this, playlist.getPreviousSong());
             player.start();
         }
 
@@ -80,15 +81,8 @@ public class MediaPlayerActivity extends AppCompatActivity {
     }
 
     public void shuffle(View view) {
-        if (shuffling) {
-            setPlaylist();
-            shuffling = false;
-        }
-        else {
-            setRandomPlaylist();
-            shuffling = true;
-        }
-        Log.d("Test", String.format("Shuffling: %b",shuffling ));
+        playlist.toggleShuffle();
+        Log.d("Test", String.format("Shuffling: %b",playlist.isShuffled ));
     }
 
     @Override
@@ -101,9 +95,9 @@ public class MediaPlayerActivity extends AppCompatActivity {
             Log.d("Test", s);
         }
 
-        setPlaylist();
+        playlist = new Playlist();
 
-        player = MediaPlayer.create(this , playlist.get(0));
+        player = MediaPlayer.create(this , playlist.getCurrentSong());
         player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
@@ -226,41 +220,20 @@ public class MediaPlayerActivity extends AppCompatActivity {
         System.loadLibrary("native-lib");
     }
 
-    private void setPlaylist() {
-        ArrayList<Integer> musicList = new ArrayList<>();
-        musicList.add(R.raw.shrekanthem);
-        musicList.add(R.raw.rockabye);
-        musicList.add(R.raw.shapeofyou);
-        playlist = musicList;
+    /*
+    public void playSong() {
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                player.reset();
+                player = MediaPlayer.create(this, R.raw.shrekanthem);
+                //player = MediaPlayer.create(this, playlist.getNextSong());
+                player.start();
+                //if (playlist.size() > i+1) {
+                //    playSong();
+                //}
+            }
+        },player.getDuration()+100);
     }
-
-    private void setRandomPlaylist() {
-        ArrayList<Integer> musicList = new ArrayList<>();
-        musicList.add(R.raw.rockabye);
-        musicList.add(R.raw.shrekanthem);
-        musicList.add(R.raw.shapeofyou);
-        playlist = musicList;
-    }
-
-    private int getNextSong() {
-        if (songPlaying >= playlist.size() - 1) {
-            songPlaying = 0;
-        }
-        else {
-            songPlaying++;
-        }
-        return playlist.get(songPlaying);
-    }
-
-    private int getPreviousSong() {
-        if (songPlaying == 0) {
-            songPlaying = playlist.size() - 1;
-        }
-        else {
-            songPlaying--;
-        }
-        return playlist.get(songPlaying);
-    }
-
-
+    */
 }
