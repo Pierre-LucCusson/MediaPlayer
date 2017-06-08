@@ -81,9 +81,11 @@ public class MediaPlayerActivity extends AppCompatActivity {
 
     public void shuffle(View view) {
         if (shuffling) {
+            setPlaylist();
             shuffling = false;
         }
         else {
+            setRandomPlaylist();
             shuffling = true;
         }
         Log.d("Test", String.format("Shuffling: %b",shuffling ));
@@ -99,12 +101,9 @@ public class MediaPlayerActivity extends AppCompatActivity {
             Log.d("Test", s);
         }
 
-        playlist = getPlaylist();
+        setPlaylist();
 
         player = MediaPlayer.create(this , playlist.get(0));
-        //player = MediaPlayer.create(this ,R.raw.shrekanthem);
-        //player = MediaPlayer.create(this ,R.raw.rockabye);
-        //player = MediaPlayer.create(this , Uri.parse("C:/Users/Pierre-Luc/AndroidStudioProjects/MediaPlayer/app/src/main/res/raw/"));
         player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
@@ -227,18 +226,28 @@ public class MediaPlayerActivity extends AppCompatActivity {
         System.loadLibrary("native-lib");
     }
 
-    private ArrayList<Integer> getPlaylist() {
+    private void setPlaylist() {
         ArrayList<Integer> musicList = new ArrayList<>();
         musicList.add(R.raw.shrekanthem);
         musicList.add(R.raw.rockabye);
         musicList.add(R.raw.shapeofyou);
-        return musicList;
+        playlist = musicList;
+    }
+
+    private void setRandomPlaylist() {
+        ArrayList<Integer> musicList = new ArrayList<>();
+        musicList.add(R.raw.rockabye);
+        musicList.add(R.raw.shrekanthem);
+        musicList.add(R.raw.shapeofyou);
+        playlist = musicList;
     }
 
     private int getNextSong() {
-        songPlaying++;
-        if (songPlaying >= playlist.size()) {
+        if (songPlaying >= playlist.size() - 1) {
             songPlaying = 0;
+        }
+        else {
+            songPlaying++;
         }
         return playlist.get(songPlaying);
     }
@@ -252,4 +261,6 @@ public class MediaPlayerActivity extends AppCompatActivity {
         }
         return playlist.get(songPlaying);
     }
+
+
 }
