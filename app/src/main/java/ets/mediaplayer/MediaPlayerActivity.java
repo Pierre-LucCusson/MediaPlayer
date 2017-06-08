@@ -3,6 +3,7 @@ package ets.mediaplayer;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -18,11 +19,14 @@ import android.widget.ToggleButton;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class MediaPlayerActivity extends AppCompatActivity {
 
     MediaPlayer player;
+    ArrayList<Integer> playlist;
+    int songPlaying = 0;
     Boolean shuffling = false;
 
     private Handler seekBarHandler = new Handler();
@@ -40,15 +44,27 @@ public class MediaPlayerActivity extends AppCompatActivity {
     }
 
     public void next(View view) {
-//        player.getCurrentPosition();
+
 //                player.getSelectedTrack();
 //        player.getTrackInfo();
 //        player.selectTrack(2);
+
+        player.reset();
+        player = MediaPlayer.create(this, getNextSong());
+        player.start();
+
         Log.d("Test", "Next was clicked");
     }
 
     public void back(View view) {
-        player.seekTo(0);
+        if (player.getCurrentPosition() < 5000) {
+            player.seekTo(0);
+        }
+        else {
+            player.reset();
+            player = MediaPlayer.create(this, getPreviousSong());
+            player.start();
+        }
 
         Log.d("Test", "Back was clicked");
     }
@@ -83,8 +99,12 @@ public class MediaPlayerActivity extends AppCompatActivity {
             Log.d("Test", s);
         }
 
+        playlist = getPlaylist();
 
-        player = MediaPlayer.create(this ,R.raw.shrekanthem);
+        player = MediaPlayer.create(this , playlist.get(0));
+        //player = MediaPlayer.create(this ,R.raw.shrekanthem);
+        //player = MediaPlayer.create(this ,R.raw.rockabye);
+        //player = MediaPlayer.create(this , Uri.parse("C:/Users/Pierre-Luc/AndroidStudioProjects/MediaPlayer/app/src/main/res/raw/"));
         player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
@@ -205,5 +225,31 @@ public class MediaPlayerActivity extends AppCompatActivity {
     // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("native-lib");
+    }
+
+    private ArrayList<Integer> getPlaylist() {
+        ArrayList<Integer> musicList = new ArrayList<>();
+        musicList.add(R.raw.shrekanthem);
+        musicList.add(R.raw.rockabye);
+        musicList.add(R.raw.shapeofyou);
+        return musicList;
+    }
+
+    private int getNextSong() {
+        songPlaying++;
+        if (songPlaying >= playlist.size()) {
+            songPlaying = 0;
+        }
+        return playlist.get(songPlaying);
+    }
+
+    private int getPreviousSong() {
+        if (songPlaying == 0) {
+            songPlaying = playlist.size() - 1;
+        }
+        else {
+            songPlaying--;
+        }
+        return playlist.get(songPlaying);
     }
 }
