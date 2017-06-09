@@ -1,5 +1,7 @@
 package ets.mediaplayer;
 
+import android.media.MediaMetadataRetriever;
+
 import java.util.ArrayList;
 
 /**
@@ -30,6 +32,7 @@ public class Playlist {
         musicList.add(R.raw.shrekanthem);
         musicList.add(R.raw.shapeofyou);
         playlist = musicList;
+
     }
 
     public int getCurrentSong() {
@@ -75,4 +78,20 @@ public class Playlist {
         return playlist.size();
     }
 
+    public String getSong() {
+
+//        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+//        retriever.setDataSource(this, getCurrentSong());
+//        String album = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+
+        return "SongSong";
+    }
+
+    public String getArtist() {
+        return "ArtistArtist";
+    }
+
+    public String getAlbum() {
+        return "AlbumAlbum";
+    }
 }

@@ -2,6 +2,7 @@ package ets.mediaplayer;
 
 import android.content.res.AssetManager;
 import android.content.res.Resources;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -46,13 +47,15 @@ public class MediaPlayerActivity extends AppCompatActivity {
 
     public void next(View view) {
 
-//                player.getSelectedTrack();
+//        player.getSelectedTrack();
 //        player.getTrackInfo();
 //        player.selectTrack(2);
 
         player.reset();
         player = MediaPlayer.create(this, playlist.getNextSong());
         player.start();
+
+        setSongDetails();
 
         Log.d("Test", "Next was clicked");
     }
@@ -66,6 +69,8 @@ public class MediaPlayerActivity extends AppCompatActivity {
             player = MediaPlayer.create(this, playlist.getPreviousSong());
             player.start();
         }
+
+        setSongDetails();
 
         Log.d("Test", "Back was clicked");
     }
@@ -101,7 +106,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
         player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                ((Button) findViewById(R.id.playButton)).setText(R.string.play);
+                ((Button) findViewById(R.id.playButton)).setText(R.string.pause);
             }
         });
 
@@ -218,6 +223,27 @@ public class MediaPlayerActivity extends AppCompatActivity {
     // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("native-lib");
+    }
+
+    private void setSongDetails() {
+
+//        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+////        Uri myUri = Uri.parse("android.resource://your.package.name/" + R.raw.yourSoundFile);
+//        Uri myUri = Uri.parse("android.res://raw/" + R.raw.shrekanthem);
+//        retriever.setDataSource(this, myUri);
+//        String songName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+//        String artistName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+//        String albumName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+
+        TextView songText =(TextView) findViewById(R.id.songText);
+        songText.setText(playlist.getSong());
+
+        TextView artistText =(TextView) findViewById(R.id.artistText);
+        artistText.setText(playlist.getArtist());
+//        artistText.setText(artistName);
+
+        TextView albumText =(TextView) findViewById(R.id.albumText);
+        albumText.setText(playlist.getAlbum());
     }
 
     /*
