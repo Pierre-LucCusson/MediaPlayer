@@ -96,11 +96,11 @@ public class MediaPlayerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_media_player);
 
         for (String s:this.getResources().getAssets().getLocales()) {
-
             Log.d("Test", s);
         }
 
-        playlist = new Playlist();
+        playlist = new Playlist(getApplicationContext());
+        setSongDetails();
 
         player = MediaPlayer.create(this , playlist.getCurrentSong());
         player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -228,6 +228,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
     private void setSongDetails() {
 
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+
         Uri myUri = Uri.parse("android.resource://" + getPackageName() + "/" + playlist.getCurrentSong());
         retriever.setDataSource(this, myUri);
 
