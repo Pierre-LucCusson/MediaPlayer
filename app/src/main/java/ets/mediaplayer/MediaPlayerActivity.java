@@ -227,23 +227,22 @@ public class MediaPlayerActivity extends AppCompatActivity {
 
     private void setSongDetails() {
 
-//        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-////        Uri myUri = Uri.parse("android.resource://your.package.name/" + R.raw.yourSoundFile);
-//        Uri myUri = Uri.parse("android.res://raw/" + R.raw.shrekanthem);
-//        retriever.setDataSource(this, myUri);
-//        String songName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-//        String artistName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-//        String albumName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        Uri myUri = Uri.parse("android.resource://" + getPackageName() + "/" + playlist.getCurrentSong());
+        retriever.setDataSource(this, myUri);
+
+        String songName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+        String artistName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST);
+        String albumName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
 
         TextView songText =(TextView) findViewById(R.id.songText);
-        songText.setText(playlist.getSong());
+        songText.setText(songName);
 
         TextView artistText =(TextView) findViewById(R.id.artistText);
-        artistText.setText(playlist.getArtist());
-//        artistText.setText(artistName);
+        artistText.setText(artistName);
 
         TextView albumText =(TextView) findViewById(R.id.albumText);
-        albumText.setText(playlist.getAlbum());
+        albumText.setText(albumName);
     }
 
     /*
