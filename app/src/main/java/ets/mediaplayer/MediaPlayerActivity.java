@@ -46,32 +46,17 @@ public class MediaPlayerActivity extends AppCompatActivity {
     }
 
     public void next(View view) {
-
-//        player.getSelectedTrack();
-//        player.getTrackInfo();
-//        player.selectTrack(2);
-
-        player.reset();
-        player = MediaPlayer.create(this, playlist.getNextSong());
-        player.start();
-
-        setSongDetails();
-
+        playNextSong();
         Log.d("Test", "Next was clicked");
     }
 
     public void back(View view) {
-        if (player.getCurrentPosition() < 5000) {
+        if (player.getCurrentPosition() > 5000) {
             player.seekTo(0);
         }
         else {
-            player.reset();
-            player = MediaPlayer.create(this, playlist.getPreviousSong());
-            player.start();
+            playPreviousSong();
         }
-
-        setSongDetails();
-
         Log.d("Test", "Back was clicked");
     }
 
@@ -107,9 +92,9 @@ public class MediaPlayerActivity extends AppCompatActivity {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
                 ((Button) findViewById(R.id.playButton)).setText(R.string.pause);
+                playNextSong();
             }
         });
-
 
         //Play button
         Button playButton = (Button) findViewById(R.id.playButton);
@@ -249,20 +234,35 @@ public class MediaPlayerActivity extends AppCompatActivity {
         albumText.setText(albumName);
     }
 
-    /*
-    public void playSong() {
-        timer.schedule(new TimerTask() {
+    public void playNextSong() {
+        player.reset();
+        player = MediaPlayer.create(this, playlist.getNextSong());
+        player.start();
+
+        setSongDetails();
+
+        player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
-            public void run() {
-                player.reset();
-                player = MediaPlayer.create(this, R.raw.shrekanthem);
-                //player = MediaPlayer.create(this, playlist.getNextSong());
-                player.start();
-                //if (playlist.size() > i+1) {
-                //    playSong();
-                //}
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                ((Button) findViewById(R.id.playButton)).setText(R.string.pause);
+                playNextSong();
             }
-        },player.getDuration()+100);
+        });
     }
-    */
+
+    public void playPreviousSong() {
+        player.reset();
+        player = MediaPlayer.create(this, playlist.getPreviousSong());
+        player.start();
+
+        setSongDetails();
+
+        player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                ((Button) findViewById(R.id.playButton)).setText(R.string.pause);
+                playNextSong();
+            }
+        });
+    }
 }
