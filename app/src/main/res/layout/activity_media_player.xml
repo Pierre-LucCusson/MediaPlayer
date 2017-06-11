@@ -88,7 +88,7 @@
             <Button
                 android:id="@+id/button11"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="@string/shuffle"
                 android:onClick="shuffle" />
@@ -96,7 +96,7 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_weight="1">
 
@@ -128,7 +128,7 @@
                 android:id="@+id/repeatButton"
                 android:layout_weight="1"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:text="@string/loop"
                 android:textOn="@string/loop"
                 android:textOff="@string/loop"

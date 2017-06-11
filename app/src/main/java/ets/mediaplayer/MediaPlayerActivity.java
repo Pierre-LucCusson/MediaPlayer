@@ -179,6 +179,9 @@ public class MediaPlayerActivity extends AppCompatActivity {
                 if(player != null){
                     int currentTime = player.getCurrentPosition() / 1000;
                     int totalTime = player.getDuration() / 1000;
+
+                    ((SeekBar) findViewById(R.id.timeSeekBar)).setMax(totalTime);
+
                     ((SeekBar) findViewById(R.id.timeSeekBar)).setProgress(currentTime);
 
                     ((TextView) findViewById(R.id.currentTime)).setText(String.format("%2d:%2d", currentTime / 60, currentTime % 60));
