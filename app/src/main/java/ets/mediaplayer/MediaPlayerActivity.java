@@ -7,7 +7,9 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +32,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
     MediaPlayer player;
     Playlist playlist;
     Timer timer;
+    private ArrayList<Float> xGesture = new ArrayList<Float>();
 
     private Handler seekBarHandler = new Handler();
 
@@ -240,11 +243,11 @@ public class MediaPlayerActivity extends AppCompatActivity {
         player.start();
 
         setSongDetails();
+        ((Button) findViewById(R.id.playButton)).setText(R.string.pause);
 
         player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                ((Button) findViewById(R.id.playButton)).setText(R.string.pause);
                 playNextSong();
             }
         });
@@ -256,13 +259,68 @@ public class MediaPlayerActivity extends AppCompatActivity {
         player.start();
 
         setSongDetails();
+        ((Button) findViewById(R.id.playButton)).setText(R.string.pause);
 
         player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                ((Button) findViewById(R.id.playButton)).setText(R.string.pause);
                 playNextSong();
             }
         });
     }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        int action = MotionEventCompat.getActionMasked(event);
+
+        switch (action) {
+            case (MotionEvent.ACTION_DOWN):
+                xGesture = new ArrayList<Float>();
+                Log.d("motionTest", "Action MotionEvent was DOWN");
+                return true;
+            case (MotionEvent.ACTION_MOVE):
+                int mActivePointerId = event.getPointerId(0);
+                int pointerIndex = event.findPointerIndex(mActivePointerId);
+                float x = event.getX(pointerIndex);
+                xGesture.add(x);
+                Log.d("motionTest", "Action MotionEvent was MOVE");
+                return true;
+            case (MotionEvent.ACTION_UP):
+                checkGestures();
+                Log.d("motionTest", "Action MotionEvent was UP");
+                return true;
+            default:
+                return super.onTouchEvent(event);
+        }
+    }
+
+    private void checkGestures() {
+
+        Boolean leftGesture = true;
+        Boolean rightGesture = true;
+
+        for(int i = 0; i < xGesture.size() - 1; i++) {
+            if (xGesture.get(i) > xGesture.get(i+1)) {
+                leftGesture = false;
+            }
+            if (xGesture.get(i) < xGesture.get(i+1)) {
+                rightGesture = false;
+            }
+        }
+
+        if (leftGesture) {
+            playNextSong();
+        }
+
+        if (rightGesture) {
+            if (player.getCurrentPosition() > 5000) {
+                player.seekTo(0);
+            } else {
+                playPreviousSong();
+            }
+        }
+    }
 }
+
+
