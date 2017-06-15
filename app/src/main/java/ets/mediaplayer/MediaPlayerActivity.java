@@ -1,7 +1,5 @@
 package ets.mediaplayer;
 
-import android.content.res.AssetManager;
-import android.content.res.Resources;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -19,17 +17,18 @@ import android.view.MenuItem;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
-
-import java.io.FileDescriptor;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
+import android.media.AudioManager;
+import android.media.audiofx.Visualizer;
+
 
 public class MediaPlayerActivity extends AppCompatActivity {
 
+    VisualizerView visualizerView;
+
     MediaPlayer player;
+    private Visualizer visualizer;
     Playlist playlist;
     Timer timer;
     private ArrayList<Float> xGesture = new ArrayList<Float>();
@@ -40,9 +39,13 @@ public class MediaPlayerActivity extends AppCompatActivity {
         Button button = (Button) view;
         if (player.isPlaying()){
             button.setText(R.string.play);
+            visualizer.setEnabled(false);
             player.pause();
         }else{
             button.setText(R.string.pause);
+
+            initVisualizer();
+            visualizer.setEnabled(true);
             player.start();
         }
         Log.d("Test", String.format("Play: %b", player.isPlaying() ));
@@ -83,6 +86,10 @@ public class MediaPlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media_player);
 
+        visualizerView = (VisualizerView) findViewById(R.id.myvisualizerview);
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
+
         for (String s:this.getResources().getAssets().getLocales()) {
             Log.d("Test", s);
         }
@@ -96,6 +103,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
             public void onCompletion(MediaPlayer mediaPlayer) {
                 ((Button) findViewById(R.id.playButton)).setText(R.string.pause);
                 playNextSong();
+                visualizer.setEnabled(true);
             }
         });
 
@@ -240,6 +248,8 @@ public class MediaPlayerActivity extends AppCompatActivity {
     public void playNextSong() {
         player.reset();
         player = MediaPlayer.create(this, playlist.getNextSong());
+        initVisualizer();
+        visualizer.setEnabled(true);
         player.start();
 
         setSongDetails();
@@ -256,6 +266,8 @@ public class MediaPlayerActivity extends AppCompatActivity {
     public void playPreviousSong() {
         player.reset();
         player = MediaPlayer.create(this, playlist.getPreviousSong());
+        initVisualizer();
+        visualizer.setEnabled(true);
         player.start();
 
         setSongDetails();
@@ -320,6 +332,26 @@ public class MediaPlayerActivity extends AppCompatActivity {
                 playPreviousSong();
             }
         }
+    }
+
+    private void initVisualizer() {
+
+        if (visualizer != null && visualizer.getEnabled()) {
+            visualizer.setEnabled(false);
+        }
+        visualizer = new Visualizer(player.getAudioSessionId());
+        visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+        visualizer.setDataCaptureListener(
+                new Visualizer.OnDataCaptureListener() {
+                    public void onWaveFormDataCapture(Visualizer visualizer,
+                                                      byte[] bytes, int samplingRate) {
+                        visualizerView.updateVisualizer(bytes);
+                    }
+
+                    public void onFftDataCapture(Visualizer visualizer,
+                                                 byte[] bytes, int samplingRate) {
+                    }
+                }, Visualizer.getMaxCaptureRate() / 2, true, false);
     }
 }
 

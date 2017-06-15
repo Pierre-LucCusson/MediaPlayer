@@ -19,6 +19,20 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/visualizerLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:orientation="vertical">
+
+            <ets.mediaplayer.VisualizerView
+                android:id="@+id/myvisualizerview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/buttonLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -135,20 +149,20 @@
                 android:onClick="loop" />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/volumeLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_above="@+id/infoLayout">
+        <!--<LinearLayout-->
+            <!--android:id="@+id/volumeLayout"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:orientation="horizontal"-->
+            <!--android:layout_above="@+id/infoLayout">-->
 
-            <SeekBar
-                android:id="@+id/volumeSeekBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
+            <!--<SeekBar-->
+                <!--android:id="@+id/volumeSeekBar"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_weight="1" />-->
 
-        </LinearLayout>
+        <!--</LinearLayout>-->
 
     </RelativeLayout>
 
