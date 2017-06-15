@@ -5,6 +5,9 @@ import android.content.res.Resources;
 import android.media.MediaMetadataRetriever;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +20,7 @@ import java.util.Random;
 public class Playlist {
 
     private ArrayList<Integer> playlist;
+    private SongList songList;
     private int songPlaying = 0;
     public Boolean isShuffled = false;
     private Context context;
@@ -48,12 +52,66 @@ public class Playlist {
         playlist = musicList;
     }
 
+    public void updateFromServer(String list)
+    {
+        Gson gson = new GsonBuilder().create();
+        songList = gson.fromJson(list, SongList.class);
+        playlist.clear();
+        for(SongList.Song s : songList.songs)
+        {
+            playlist.add(s.ID);
+            Log.d("TestSong", s.title);
+        }
+
+    }
+
     public void setRandomPlaylist() {
         Collections.shuffle(playlist);
     }
 
     public int getCurrentSong() {
         return playlist.get(songPlaying);
+    }
+
+    public SongList.Song getCurrentSongInfo()
+    {
+        for(SongList.Song s : songList.songs)
+        {
+            if (s.ID == playlist.get(songPlaying))
+            {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    public void setCurrentSong(int id)
+    {
+        songPlaying = playlist.indexOf(id);
+    }
+
+    public SongList.Song getSongById(int id)
+    {
+        for(SongList.Song s : songList.songs)
+        {
+            if (s.ID == id)
+            {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    public String getSongPath(int id)
+    {
+        for(SongList.Song s : songList.songs)
+        {
+            if (s.ID == id)
+            {
+                return s.path;
+            }
+        }
+        return null;
     }
 
     public int getNextSong() {
@@ -94,4 +152,5 @@ public class Playlist {
     public int size() {
         return playlist.size();
     }
+
 }

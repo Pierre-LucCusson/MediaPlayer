@@ -7,6 +7,7 @@
     tools:context="ets.mediaplayer.MediaPlayerActivity">
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
@@ -14,9 +15,10 @@
     </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout
-        android:background="@color/background"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_above="@+id/buttonLayout"
+        android:background="@color/background">
 
         <LinearLayout
             android:id="@+id/visualizerLayout"
@@ -28,7 +30,37 @@
             <ets.mediaplayer.VisualizerView
                 android:id="@+id/myvisualizerview"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ProgressBar
+                android:id="@+id/IsSynced"
+                style="@style/Widget.AppCompat.ProgressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"/>
+
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Preferences"/>
+
+            <ToggleButton
+                android:id="@+id/ServerControl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="ToggleButton"
+                android:textOff="Control Client"
+                android:textOn="Control Server"/>
 
         </LinearLayout>
 
@@ -44,75 +76,75 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/back" />
+                android:text="@string/back"/>
 
             <Button
                 android:id="@+id/playButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:onClick="play"
                 android:text="@string/play"
-                android:visibility="visible"
-                android:onClick="play" />
+                android:visibility="visible"/>
 
             <Button
                 android:id="@+id/nextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/next"
-                android:onClick="next" />
+                android:onClick="next"
+                android:text="@string/next"/>
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/seekBarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_above="@+id/buttonLayout">
+            android:layout_above="@+id/buttonLayout"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/currentTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:inputType="time"
-                android:text="00:00" />
+                android:text="00:00"/>
 
             <SeekBar
                 android:id="@+id/timeSeekBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="10" />
+                android:layout_weight="10"/>
 
             <TextView
                 android:id="@+id/totalTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:inputType="time"
-                android:text="99:99" />
+                android:text="99:99"/>
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/infoLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:id="@+id/infoLayout"
-            android:layout_above="@+id/seekBarLayout">
+            android:layout_above="@+id/seekBarLayout"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/button11"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/shuffle"
-                android:onClick="shuffle" />
+                android:onClick="shuffle"
+                android:text="@string/shuffle"/>
 
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/songText"
@@ -121,13 +153,15 @@
                     android:inputType="text"
                     android:text="My heart will go on"
                     android:textAlignment="center"/>
+
                 <TextView
                     android:id="@+id/artistText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:inputType="text"
                     android:text="Céline Dion"
-                    android:textAlignment="center" />
+                    android:textAlignment="center"/>
+
                 <TextView
                     android:id="@+id/albumText"
                     android:layout_width="wrap_content"
@@ -140,27 +174,27 @@
 
             <ToggleButton
                 android:id="@+id/repeatButton"
-                android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="loop"
                 android:text="@string/loop"
-                android:textOn="@string/loop"
                 android:textOff="@string/loop"
-                android:onClick="loop" />
+                android:textOn="@string/loop"/>
         </LinearLayout>
 
         <!--<LinearLayout-->
-            <!--android:id="@+id/volumeLayout"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:orientation="horizontal"-->
-            <!--android:layout_above="@+id/infoLayout">-->
+        <!--android:id="@+id/volumeLayout"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:layout_above="@+id/infoLayout">-->
 
-            <!--<SeekBar-->
-                <!--android:id="@+id/volumeSeekBar"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_weight="1" />-->
+        <!--<SeekBar-->
+        <!--android:id="@+id/volumeSeekBar"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1" />-->
 
         <!--</LinearLayout>-->
 

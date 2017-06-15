@@ -1,10 +1,12 @@
 package ets.mediaplayer;
 
+import android.content.Intent;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -14,9 +16,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
 import android.media.AudioManager;
@@ -31,9 +36,29 @@ public class MediaPlayerActivity extends AppCompatActivity {
     private Visualizer visualizer;
     Playlist playlist;
     Timer timer;
+    HttpClient client;
+    boolean isClientPlaying = true;
     private ArrayList<Float> xGesture = new ArrayList<Float>();
 
     private Handler seekBarHandler = new Handler();
+
+
+    public void preferences(View view)
+    {
+        Intent i = new Intent(this, MPpreferencesActivity.class);
+        startActivity(i);
+    }
+
+    public String sendCommand(String command)
+    {
+            try {
+                return client.run(command);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        return null;
+    }
+
 
     public void play(View view) {
         Button button = (Button) view;
@@ -41,12 +66,15 @@ public class MediaPlayerActivity extends AppCompatActivity {
             button.setText(R.string.play);
             visualizer.setEnabled(false);
             player.pause();
+            sendCommand(client.PAUSE);
+
+
         }else{
             button.setText(R.string.pause);
-
             initVisualizer();
             visualizer.setEnabled(true);
             player.start();
+            sendCommand(client.RESUME);
         }
         Log.d("Test", String.format("Play: %b", player.isPlaying() ));
     }
@@ -57,12 +85,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
     }
 
     public void back(View view) {
-        if (player.getCurrentPosition() > 5000) {
-            player.seekTo(0);
-        }
-        else {
-            playPreviousSong();
-        }
+        playPreviousSong();
         Log.d("Test", "Back was clicked");
     }
 
@@ -73,11 +96,14 @@ public class MediaPlayerActivity extends AppCompatActivity {
         else {
             player.setLooping(true);
         }
+        sendCommand(client.REPEAT);
+
         Log.d("Test", String.format("Loop: %b",player.isLooping() ));
     }
 
     public void shuffle(View view) {
         playlist.toggleShuffle();
+        sendCommand(client.SHUFFLE);
         Log.d("Test", String.format("Shuffling: %b",playlist.isShuffled ));
     }
 
@@ -86,29 +112,26 @@ public class MediaPlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media_player);
 
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitNetwork().build();
+        StrictMode.setThreadPolicy(policy);
+
+        client = new HttpClient();
+
         visualizerView = (VisualizerView) findViewById(R.id.myvisualizerview);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-
-        for (String s:this.getResources().getAssets().getLocales()) {
-            Log.d("Test", s);
-        }
-
         playlist = new Playlist(getApplicationContext());
-        setSongDetails();
+        playlist.updateFromServer(sendCommand(client.PLAYLIST));
+        prepareStreaming(playlist.getCurrentSongInfo());
 
-        player = MediaPlayer.create(this , playlist.getCurrentSong());
-        player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                ((Button) findViewById(R.id.playButton)).setText(R.string.pause);
-                playNextSong();
-                visualizer.setEnabled(true);
-            }
-        });
+        player.setVolume(0,0);
+        sendCommand(client.RESUME);
+        sendCommand(client.PAUSE);
+        player.pause();
+        player.setVolume(1,1);
 
         //Play button
-        Button playButton = (Button) findViewById(R.id.playButton);
+        final Button playButton = (Button) findViewById(R.id.playButton);
         playButton.setOnClickListener( new View.OnClickListener()
         {
             @Override
@@ -139,11 +162,33 @@ public class MediaPlayerActivity extends AppCompatActivity {
 
 
         //Loop button
+        ToggleButton ControlButton = (ToggleButton) findViewById(R.id.ServerControl);
+        ControlButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                ProgressBar pb = (ProgressBar) findViewById(R.id.IsSynced);
+
+                isClientPlaying = isChecked;
+                if (isChecked)
+                {
+
+                    pb.setVisibility(View.VISIBLE);
+                    player.setVolume(1,1);
+                }else{
+                    player.setVolume(0,0);
+                    pb.setVisibility(View.INVISIBLE);
+                }
+
+            }
+        });
+
+
+        //Loop button
         ToggleButton loopButton = (ToggleButton) findViewById(R.id.repeatButton);
         loopButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 buttonView.setText(R.string.loop);
                 player.setLooping(isChecked);
+                sendCommand(client.REPEAT);
             }
         });
 
@@ -190,7 +235,6 @@ public class MediaPlayerActivity extends AppCompatActivity {
 
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -224,35 +268,49 @@ public class MediaPlayerActivity extends AppCompatActivity {
         System.loadLibrary("native-lib");
     }
 
-    private void setSongDetails() {
-
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-
-        Uri myUri = Uri.parse("android.resource://" + getPackageName() + "/" + playlist.getCurrentSong());
-        retriever.setDataSource(this, myUri);
-
-        String songName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-        String artistName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST);
-        String albumName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+    private void setSongDetails(SongList.Song song) {
 
         TextView songText =(TextView) findViewById(R.id.songText);
-        songText.setText(songName);
+        songText.setText(song.title);
 
         TextView artistText =(TextView) findViewById(R.id.artistText);
-        artistText.setText(artistName);
+        artistText.setText(song.artist);
 
         TextView albumText =(TextView) findViewById(R.id.albumText);
-        albumText.setText(albumName);
+        albumText.setText(song.artist);
     }
 
-    public void playNextSong() {
-        player.reset();
-        player = MediaPlayer.create(this, playlist.getNextSong());
+    public void prepareStreaming(SongList.Song song)
+    {
+        if (player != null)
+        {
+            player.reset();
+        }
+
+        player = new MediaPlayer();
+        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        try {
+            player.setDataSource(client.urlHead + song.path);
+            player.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         initVisualizer();
         visualizer.setEnabled(true);
         player.start();
+        setSongDetails(song);
 
-        setSongDetails();
+        if (isClientPlaying)
+        {
+            player.setVolume(1,1);
+        }else{
+            player.setVolume(0,0);
+        }
+    }
+
+    public void playSong(int id) {
+        prepareStreaming(playlist.getSongById(id));
+
         ((Button) findViewById(R.id.playButton)).setText(R.string.pause);
 
         player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -263,22 +321,16 @@ public class MediaPlayerActivity extends AppCompatActivity {
         });
     }
 
-    public void playPreviousSong() {
-        player.reset();
-        player = MediaPlayer.create(this, playlist.getPreviousSong());
-        initVisualizer();
-        visualizer.setEnabled(true);
-        player.start();
+    public void playNextSong()
+    {
+        int id = Integer.valueOf(sendCommand(client.NEXT));
+        playSong(id);
+    }
 
-        setSongDetails();
-        ((Button) findViewById(R.id.playButton)).setText(R.string.pause);
-
-        player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                playNextSong();
-            }
-        });
+    public void playPreviousSong()
+    {
+        int id = Integer.valueOf(sendCommand(client.BACK));
+        playSong(id);
     }
 
     @Override
@@ -335,6 +387,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
     }
 
     private void initVisualizer() {
+
 
         if (visualizer != null && visualizer.getEnabled()) {
             visualizer.setEnabled(false);
